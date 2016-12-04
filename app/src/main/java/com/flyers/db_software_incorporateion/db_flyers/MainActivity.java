@@ -20,7 +20,9 @@ import android.widget.TextView;
 
 
 
+import com.appsee.Appsee;
 import com.crashlytics.android.Crashlytics;
+
 import io.fabric.sdk.android.Fabric;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+        Appsee.start(getString(R.string.com_appsee_apikey));
         setContentView(R.layout.app_bar_main );
         textView = (TextView) findViewById(R.id.text);
 

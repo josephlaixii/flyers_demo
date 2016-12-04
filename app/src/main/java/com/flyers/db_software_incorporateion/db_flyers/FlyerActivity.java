@@ -1,20 +1,17 @@
 package com.flyers.db_software_incorporateion.db_flyers;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.flyers.db_software_incorporateion.db_flyers.eventbus.FlyerArrayBus;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,20 +33,36 @@ public class FlyerActivity extends AppCompatActivity {
     public static final String BASE_URL = "";
 
      private ArrayList<String> pics = new ArrayList<String>();
-    private List<String> nofrillsurl = new ArrayList<String>();
+    private List<String> flyerurl = new ArrayList<String>();
     private ArrayList<String> gurlUpdate = new ArrayList<>();
+    private ArrayList<String> expiredate = new ArrayList<>();
     private String foodurl;
-    private String src,asrc;
+    private String src,asrc,title;
     private RecyclerView my_recycler_view;
     private FlyerAdapter adapter;
     private Logo2 mTask;
     TextView textView;
     int i = 0;
-
+    Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listof_stores);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        Bundle extra3 = getIntent().getBundleExtra("btitle");
+        title = extra3.getString("btitle");
+
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
+
+
 
         Bundle extra = getIntent().getBundleExtra("low");
         gurlUpdate = (ArrayList<String>) extra.getStringArrayList("gurl");
@@ -57,10 +70,22 @@ public class FlyerActivity extends AppCompatActivity {
         Bundle extra2 = getIntent().getBundleExtra("bpos");
         i = extra2.getInt("bpos");
 
-        System.out.println("The pos" + i);
+
+
+
 
         mTask = (Logo2) new Logo2().execute();
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -123,20 +148,21 @@ public class FlyerActivity extends AppCompatActivity {
 
                         System.out.println("A TAG Found!");
                         System.out.println("A TAG attribute is :" + urla);
-                        nofrillsurl.add(urla);
+                        flyerurl.add(urla);
 
 
                     }
 
-                    Request request2 = new Request.Builder()
-                            .url(nofrillsurl.get(1))
-                            .build();
+                    if (flyerurl.get(1) != null) {
+                        Request request2 = new Request.Builder()
+                                .url(flyerurl.get(1))
+                                .build();
 
-                    Response response3 = client.newCall(request2).execute();
+                        Response response3 = client.newCall(request2).execute();
 
-                        if(response3.code() == 200) {
+                        if (response3.code() == 200) {
                             // Connect to the web site
-                            Document document = Jsoup.connect(nofrillsurl.get(1)).header("Accept-Encoding", "gzip, deflate")
+                            Document document = Jsoup.connect(flyerurl.get(1)).header("Accept-Encoding", "gzip, deflate")
                                     .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                                     .maxBodySize(0)
                                     .method(org.jsoup.Connection.Method.GET)
@@ -153,25 +179,46 @@ public class FlyerActivity extends AppCompatActivity {
 
                             }
 
-                            int i2[] = {0,1,pics.size()-1};
+                            int i2[] = {0, 1, pics.size() - 1};
                             int ilen = i2.length;
                             for (int j = 0; j < ilen; j++) {
-                                pics.remove(i2[j]-j);
+                                pics.remove(i2[j] - j);
                             }
 
-                        }else{
-                            getCallingActivity();
+                            Elements flyercont = div.select("div.flyer-content");
+                            Elements flyerstore = flyercont.select("div.flyer-store");
+                            Elements flyerstoreinner = flyerstore.select("div.flyer-store-inner");
+                            Elements span = flyerstoreinner.select("span");
+
+                            for (Element el: span){
+                                expiredate.add(el.text());
+                            }
+
+
+                            //System.out.println("This is the expire date" + expiredate.get(0));
+                        } else {
+//                            intent = getIntent();
+//                            finish();
+//                            startActivity(intent);
                         }
+                    }else{
+//                        intent = getIntent();
+//                        finish();
+//                        startActivity(intent);
+                    }
 
                 }else{
-                    getCallingActivity();
+//                    intent = getIntent();
+//                    finish();
+//                    startActivity(intent);
 
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
-                getCallingActivity();
+
                 System.out.println("This is error" + e);
+
             }
             return null;
         }
@@ -180,12 +227,18 @@ public class FlyerActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-//            if(nofrillsurl.get(1) != null){
-//                foodurl = nofrillsurl.get(1);
+//            if(flyerurl.get(1) != null){
+//                foodurl = flyerurl.get(1);
 //            }
 //
 //
-//            textView.setText(nofrillsurl.get(0));
+//            textView.setText(flyerurl.get(0));
+
+            if(!expiredate.isEmpty()) {
+                Toolbar toolbarbottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+                setSupportActionBar(toolbarbottom);
+                getSupportActionBar().setTitle(expiredate.get(0));
+            }
 
             my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
             my_recycler_view.setHasFixedSize(true);

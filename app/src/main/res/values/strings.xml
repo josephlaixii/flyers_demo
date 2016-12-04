@@ -6,4 +6,6 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_listof_stores">ListofStores</string>
+    <string name="com.appsee.apikey" translatable="false">16c3a004114b46e9bf0e5439e7c40401</string>
+
 </resources>

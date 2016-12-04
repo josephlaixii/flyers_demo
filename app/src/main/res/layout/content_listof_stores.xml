@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-
+    android:background="#3B5323"
 
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.flyers.db_software_incorporateion.db_flyers.FlyerActivity"
@@ -17,7 +17,7 @@
 
 
     <android.support.v7.widget.RecyclerView
-        android:layout_below="@+id/text"
+        android:background="#3B5323"
         android:layout_above="@+id/toolbar_bottom"
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
@@ -26,10 +26,11 @@
         android:scrollbars="vertical" />
 
     <android.support.v7.widget.Toolbar
+
         android:id="@+id/toolbar_bottom"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:background="?attr/colorPrimary"
+        android:background="#FFF"
         android:layout_alignParentBottom="true"
         android:minHeight="?attr/actionBarSize" />
 </RelativeLayout>
