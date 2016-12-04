@@ -1,16 +1,12 @@
 package com.flyers.db_software_incorporateion.db_flyers;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,37 +15,54 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
-import org.jsoup.Jsoup;
+
+
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    String url = "http://flyers.smartcanucks.ca/food-basics-canada";
-    ArrayList<String> pics = new ArrayList<String>();
-    List<String> nofrillsurl = new ArrayList<String>();
-    String foodurl;
-    String src,asrc;
+    private String url = "http://flyers.smartcanucks.ca/";
+    private ArrayList<String> pics = new ArrayList<String>();
+    private ArrayList<String> title = new ArrayList<String>();
+    private ArrayList<String> gurl = new ArrayList<String>();
+    private List<String> nofrillsurl = new ArrayList<String>();
+    private String foodurl;
+    private String src,src2,src3;
     private RecyclerView my_recycler_view;
     private MainActivityAdapter adapter;
-    TextView textView;
+    private FlyerActivity flyerActivity;
+    private Button b;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        Fabric.with(this, new Crashlytics());
+        setContentView(R.layout.app_bar_main );
         textView = (TextView) findViewById(R.id.text);
-        new Logo().execute();
 
+
+        setTitle("All Flyers");
+        new Logo().execute();
 
 
 
@@ -57,14 +70,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -133,123 +138,89 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    // Logo AsyncTask
-    private class Logo extends AsyncTask<Void, Void, Void> {
-        Bitmap bitmap,bitmap2;
-        InputStream input,input2;
-        ArrayList<String> array_image = new ArrayList<String>();
-        private Dialog mProgressDialog;
-
+    public class Logo extends AsyncTask<Void, Void, Void> {
+        ArrayList<String> gurlUpdate = new ArrayList<String>();
+        @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+            for (int j = 0; j < gurl.size(); j++) {
+                if(j > 51 && j < 481) {
+                    gurlUpdate.add(gurl.get(j));
+                }
+            }
+            my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
+            my_recycler_view.setHasFixedSize(true);
+            my_recycler_view.setLayoutManager(new GridLayoutManager(MainActivity.this,3));
+            adapter = new MainActivityAdapter(MainActivity.this,pics,title,gurlUpdate);
+            flyerActivity = new FlyerActivity();
+            System.out.println("This is the gurlupdate" + gurlUpdate);
+            my_recycler_view.setAdapter(adapter);
 
         }
 
-
-        protected Void doInBackground(Void... params) {
-
+        @Override
+        protected Void doInBackground(Void... voids) {
             Connection.Response response = null;
             try {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
 
+                Response response2 = client.newCall(request).execute();
 
-                response = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate")
-                        .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-                        .maxBodySize(0)
-                        .method(org.jsoup.Connection.Method.GET)
-                        .referrer("http://www.google.com")
-                        .timeout(9000)
-                        .execute();
-
-                int statusCode = response.statusCode();
-                System.out.println("THis is the status Code foodbasic " + statusCode);
-                if(statusCode==200) {
+                if (response2.code() == 200) {
                     Document docsmart = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate")
                             .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                             .maxBodySize(0)
                             .method(org.jsoup.Connection.Method.GET)
                             .referrer("http://www.google.com")
-                            .timeout(9000).get();
-
-                    Elements div = docsmart.select("div.flyer-card");
-                    Elements a = div.select("a");
-                    Elements href = a.select("href");
-                    String urla;
-
-
-                    for (Element el2 : a) {
-
-                        //for each element get the srs url
-                        //asrc = el2.select("li > a").toString();
-                        urla = el2.attr("abs:href");
-                        urla += "/all";
-
-                        System.out.println("A TAG Found!");
-                        System.out.println("A TAG attribute is :" + urla);
-                        nofrillsurl.add(urla);
-
-
-                    }
-
-                    // Connect to the web site
-                    Document document = Jsoup.connect(nofrillsurl.get(1)).header("Accept-Encoding", "gzip, deflate")
-                            .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-                            .maxBodySize(0)
-                            .method(org.jsoup.Connection.Method.GET)
-                            .referrer("http://www.google.com")
-                            .timeout(5000)
                             .get();
 
-                    // Using Elements to get the class data
-                    Elements img = document.getElementsByTag("img");
-                    //Elements div = document.select("div.bg-flyer-container");
-                    // Locate the src attribute
-                    String imgSrc = img.attr("src");
-
+                    Elements div = docsmart.select("div.image-block");
+                    Elements img = div.select("img");
 
                     for (Element el : img) {
-
-                        //for each element get the srs url
                         src = el.absUrl("src");
-
-                        System.out.println("Image Found!");
-                        System.out.println("src attribute is : " + src);
                         pics.add(src);
+                    }
 
+                    Elements div2 = docsmart.select("div.title-area");
+                    Elements span = div2.select("span");
+
+                    for (Element el : span) {
+                        src2 = el.text();
+                        title.add(src2);
+                    }
+
+                    int c=0;
+                    Elements ul = docsmart.select("ul");
+                    Elements li = ul.select("li");
+                    Elements a = li.select("a");
+                    for (Element el : a) {
+                        src3 = el.absUrl("href");
+                        gurl.add(src3);
 
                     }
-                }else{
-                    System.out.println("received error code : " + statusCode);
 
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             return null;
+
         }
 
-
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-
-            if(nofrillsurl.get(1) != null){
-                foodurl = nofrillsurl.get(1);
-            }
-            //logoimg.setImageBitmap(bitmap);
-
-            textView.setText(nofrillsurl.get(0));
-            int i[] = {0,1,pics.size()-1};
-            for (int j = 0; j < i.length; j++) {
-                pics.remove(i[j]-j);
-            }
-            my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
-            my_recycler_view.setHasFixedSize(true);
-            my_recycler_view.setLayoutManager(new LinearLayoutManager(MainActivity.this,LinearLayoutManager.HORIZONTAL,false));
-            adapter = new MainActivityAdapter(MainActivity.this,pics,foodurl);
-            my_recycler_view.setAdapter(adapter);
-            System.out.println("DONE DFSFDSFSDFSDF : " + foodurl);
-        }
     }
 
 

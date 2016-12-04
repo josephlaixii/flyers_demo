@@ -12,19 +12,18 @@
     tools:context="com.flyers.db_software_incorporateion.db_flyers.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+
+
 
 
     <android.support.v7.widget.RecyclerView
-        android:layout_below="@+id/text"
+        android:paddingTop="?attr/actionBarSize"
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none" />
+
+
 
 
 </RelativeLayout>
