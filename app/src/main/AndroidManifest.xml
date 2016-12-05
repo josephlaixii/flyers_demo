@@ -25,6 +25,12 @@
             android:label="@string/title_activity_listof_stores"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".ViewPagerActivity"
+            android:label="@string/title_activity_listof_stores"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="20d09f671982bd5728fc2258d29c6c1e29aeb5d6" />

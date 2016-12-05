@@ -245,6 +245,7 @@ public class FlyerActivity extends AppCompatActivity {
             my_recycler_view.setLayoutManager(new LinearLayoutManager(FlyerActivity.this,LinearLayoutManager.HORIZONTAL,false));
             adapter = new FlyerAdapter(FlyerActivity.this,pics,foodurl);
             my_recycler_view.setAdapter(adapter);
+            System.out.println("pics man" +pics);
             System.out.println("DONE DFSFDSFSDFSDF : " + foodurl);
         }
     }

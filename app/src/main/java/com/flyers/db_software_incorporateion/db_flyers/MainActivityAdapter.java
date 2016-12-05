@@ -93,7 +93,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     Bundle btitle = new Bundle();
                     btitle.putString("btitle",title.get(i));
 
-                    Intent intent = new Intent(v.getContext(),FlyerActivity.class);
+                    Intent intent = new Intent(v.getContext(),ViewPagerActivity.class);
                     intent.putExtra("low",low);
                     intent.putExtra("bpos",bpos);
                     intent.putExtra("btitle",btitle);
