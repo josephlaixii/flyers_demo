@@ -196,13 +196,17 @@ public class ViewPagerActivity extends AppCompatActivity {
 							InputStream input = connection.getInputStream();
 
 							BitmapFactory.Options options = new BitmapFactory.Options();
-							options.inJustDecodeBounds = true;
-							myBitmap = BitmapFactory.decodeStream(input);
+//							options.inJustDecodeBounds = true;
+							//options.inSampleSize = 2;
+							options.inPreferredConfig = Bitmap.Config.RGB_565;
+							//options.inScaled=false;
+							myBitmap = BitmapFactory.decodeStream(input,null,options);
 							int imageHeight = options.outHeight;
 							int imageWidth = options.outWidth;
 							String imageType = options.outMimeType;
 
 							arrBitMap.add(myBitmap);
+
 						}
 
 
@@ -232,8 +236,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
-			myBitmap.recycle();
-			myBitmap=null;
+
 			if(!expiredate.isEmpty()) {
 				Toolbar toolbarbottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 				setSupportActionBar(toolbarbottom);
@@ -271,7 +274,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 			PhotoView photoView = new PhotoView(container.getContext());
 			toolbar = ViewPagerActivity.toolbar;
 			//photoView.setImageResource(sDrawables[position]);
-			getSupportActionBar().setSubtitle(i + " of " + (sarrBitMap.size()-1));
+			//getSupportActionBar().setSubtitle(i + " of " + (sarrBitMap.size()-1));
 			if(!sarrBitMap.isEmpty()) {
 				photoView.setImageBitmap(sarrBitMap.get(i));
 
@@ -280,8 +283,8 @@ public class ViewPagerActivity extends AppCompatActivity {
 			}
 
 
-
-			getSupportActionBar().setSubtitle(mViewPager.getCurrentItem()+1 + " of " + (sarrBitMap.size()));
+			//System.out.println("mviewpager" + (mViewPager.getCurrentItem()+1));
+			getSupportActionBar().setSubtitle((mViewPager.getCurrentItem()+1) + " of " + (sarrBitMap.size()));
 			container.addView(photoView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
 			return photoView;
