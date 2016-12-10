@@ -28,6 +28,8 @@ public class HackyViewPager extends ViewPager {
         super(context, attrs);
     }
 
+
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
 		try {

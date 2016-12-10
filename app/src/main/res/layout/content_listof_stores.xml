@@ -17,6 +17,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_above="@+id/toolbar_bottom"
         android:id="@+id/view_pager"
+        android:animateLayoutChanges="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -30,12 +31,44 @@
 
         <!--android:scrollbars="vertical" />-->
 
+    <Button
+        android:text=""
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/button2"
+        android:background="@drawable/back_button"
+        android:layout_marginLeft="110dp"
+        android:layout_marginStart="110dp"
+        android:layout_below="@+id/view_pager"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text=""
+        android:background="@drawable/back_button"
+        android:rotation="180"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:saveEnabled="true"
+        android:id="@+id/button"
+        android:layout_marginBottom="64dp"
+        android:layout_marginRight="109dp"
+        android:layout_marginEnd="109dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
     <android.support.v7.widget.Toolbar
 
         android:id="@+id/toolbar_bottom"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_width="match_parent"
+
         android:background="#FFF"
-        android:layout_alignParentBottom="true"
-        android:minHeight="?attr/actionBarSize" />
+        android:paddingTop="200dp"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_alignBottom="@+id/button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

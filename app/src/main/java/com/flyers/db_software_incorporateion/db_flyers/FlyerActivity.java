@@ -1,11 +1,13 @@
 package com.flyers.db_software_incorporateion.db_flyers;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +38,10 @@ public class FlyerActivity extends AppCompatActivity {
     private List<String> flyerurl = new ArrayList<String>();
     private ArrayList<String> gurlUpdate = new ArrayList<>();
     private ArrayList<String> expiredate = new ArrayList<>();
+    private ArrayList<String> h3tag = new ArrayList<>();
+    private ArrayList<String> flyerimagetag = new ArrayList<>();
+    private ArrayList<String> gurlUpdate2 = new ArrayList<>();
+
     private String foodurl;
     private String src,asrc,title;
     private RecyclerView my_recycler_view;
@@ -44,10 +50,12 @@ public class FlyerActivity extends AppCompatActivity {
     TextView textView;
     int i = 0;
     Intent intent;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listof_stores);
+        setContentView(R.layout.activity_listof_stores_flyeractivity);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -56,7 +64,7 @@ public class FlyerActivity extends AppCompatActivity {
         Bundle extra3 = getIntent().getBundleExtra("btitle");
         title = extra3.getString("btitle");
 
-        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setTitle(title + " " + "Flyers");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -126,7 +134,7 @@ public class FlyerActivity extends AppCompatActivity {
 
                 Response response2 = client.newCall(request).execute();
 
-                System.out.println("THis is the status Code " +  response2.code());
+                System.out.println("THis is the status Code " +  gurlUpdate.get(i));
                 if(response2.code()==200) {
                     Document docsmart = Jsoup.connect(gurlUpdate.get(i)).header("Accept-Encoding", "gzip, deflate")
                             .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
@@ -188,14 +196,43 @@ public class FlyerActivity extends AppCompatActivity {
                             Elements flyercont = div.select("div.flyer-content");
                             Elements flyerstore = flyercont.select("div.flyer-store");
                             Elements flyerstoreinner = flyerstore.select("div.flyer-store-inner");
+
+                            Elements divflyerimagetag = div.select("div.flyer-image");
+                            Elements flyerimage = divflyerimagetag.select("img");
+
                             Elements span = flyerstoreinner.select("span");
+                            Elements h3 = flyerstoreinner.select("h3");
+
+                            for (Element el: flyerimage){
+                                flyerimagetag.add(el.absUrl("src"));
+                            }
 
                             for (Element el: span){
                                 expiredate.add(el.text());
                             }
 
+                            for (Element el: h3){
+                                h3tag.add(el.text());
+                            }
 
-                            //System.out.println("This is the expire date" + expiredate.get(0));
+
+                            Elements div2 = document.select("div.flyer-card");
+                            Elements flyercont2 = div2.select("div.flyer-content");
+                            Elements flyerstore2 = flyercont2.select("div.flyer-store");
+                            Elements flyerstoreinner2 = flyerstore2.select("div.flyer-store-inner");
+
+
+                            Elements a2 = flyercont.select("a");
+
+                            for (Element el : a2) {
+
+                                gurlUpdate2.add(el.absUrl("href"));
+
+                            }
+
+//                            System.out.println("This is the expire date " + gurlUpdate2);
+//                            System.out.println("This is the expire date " + expiredate);
+//                            System.out.println("This is the expire date " + h3tag);
                         } else {
 //                            intent = getIntent();
 //                            finish();
@@ -234,16 +271,19 @@ public class FlyerActivity extends AppCompatActivity {
 //
 //            textView.setText(flyerurl.get(0));
 
-            if(!expiredate.isEmpty()) {
-                Toolbar toolbarbottom = (Toolbar) findViewById(R.id.toolbar_bottom);
-                setSupportActionBar(toolbarbottom);
-                getSupportActionBar().setTitle(expiredate.get(0));
-            }
+//            if(!expiredate.isEmpty()) {
+//                Toolbar toolbarbottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+//                setSupportActionBar(toolbarbottom);
+//                getSupportActionBar().setTitle(expiredate.get(0));
+//            }
+//
+
 
             my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
-            my_recycler_view.setHasFixedSize(true);
-            my_recycler_view.setLayoutManager(new LinearLayoutManager(FlyerActivity.this,LinearLayoutManager.HORIZONTAL,false));
-            adapter = new FlyerAdapter(FlyerActivity.this,pics,foodurl);
+//            my_recycler_view.setHasFixedSize(true);
+            my_recycler_view.setLayoutManager(new LinearLayoutManager(FlyerActivity.this,LinearLayoutManager.VERTICAL,false));
+
+            adapter = new FlyerAdapter(FlyerActivity.this,expiredate,h3tag,flyerimagetag,gurlUpdate2,title);
             my_recycler_view.setAdapter(adapter);
             System.out.println("pics man" +pics);
             System.out.println("DONE DFSFDSFSDFSDF : " + foodurl);

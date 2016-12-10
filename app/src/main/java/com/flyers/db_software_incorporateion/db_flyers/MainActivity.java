@@ -3,6 +3,7 @@ package com.flyers.db_software_incorporateion.db_flyers;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.os.CountDownTimer;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 
 import com.appsee.Appsee;
@@ -218,6 +219,21 @@ public class MainActivity extends AppCompatActivity
 
             } catch (IOException e) {
                 e.printStackTrace();
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        final Toast tag = Toast.makeText(MainActivity.this, "Internet Connection Lost", Toast.LENGTH_SHORT);
+                        tag.show();
+                        new CountDownTimer(3000, 1000)
+                        {
+
+                            public void onTick(long millisUntilFinished) {tag.show();}
+                            public void onFinish() {tag.show();}
+
+                        }.start();
+
+                    }
+                });
             }
 
             return null;

@@ -2,41 +2,43 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
     app:cardCornerRadius="5dp"
     app:cardUseCompatPadding="true"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="0dp"
+        android:layout_gravity="center"
         android:background="?android:selectableItemBackground"
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/itemImage"
+            android:id="@+id/itemImageflyer"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="180dp"
             android:layout_gravity="center_horizontal"
             android:scaleType="fitXY"
-            android:src="@drawable/ic_menu_camera" />
+            android:src="@drawable/trolltunga" />
 
 
         <TextView
             android:id="@+id/tvTitle"
+            android:layout_below="@+id/itemImageflyer"
             android:layout_width="match_parent"
             android:layout_height="39dp"
-            android:layout_below="@id/itemImage"
             android:gravity="center"
             android:padding="5dp"
             android:text="5 Stages of branding ever"
             android:textColor="@android:color/black"
             android:textAlignment="center"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>
