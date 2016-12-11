@@ -172,7 +172,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		super.onBackPressed();
 		mTask.cancel(true);
-		myBitmap.recycle();
+
 		arrBitMap.clear();
 		gurlUpdate2.clear();
 		expiredate.clear();
