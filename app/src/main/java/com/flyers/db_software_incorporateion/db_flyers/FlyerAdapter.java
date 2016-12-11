@@ -62,7 +62,7 @@ public class FlyerAdapter extends RecyclerView.Adapter<FlyerAdapter.ItemRowHolde
 
         if(!flyerimagetag.isEmpty()) {
             holder.tvTitle.setText(h3tag.get(i));
-            Glide.with(context).load(flyerimagetag.get(i)).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.ALL).override(2000, 2000).fitCenter().into(holder.itemImage);
+            Glide.with(context).load(flyerimagetag.get(i)).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.ALL).override(500, 500).fitCenter().into(holder.itemImage);
 
         }
     }

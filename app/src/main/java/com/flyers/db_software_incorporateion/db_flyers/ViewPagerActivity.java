@@ -19,6 +19,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -49,6 +54,8 @@ import java.util.ArrayList;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import rapid.decoder.BitmapDecoder;
+import rapid.decoder.BitmapPostProcessor;
 import uk.co.senab.photoview.PhotoView;
 
 public class ViewPagerActivity extends AppCompatActivity {
@@ -136,6 +143,8 @@ public class ViewPagerActivity extends AppCompatActivity {
 	protected void onPause() {
 		super.onPause();
 		mTask.cancel(true);
+		Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
+				MainActivity.class));
 	}
 
 	@Override
@@ -268,42 +277,40 @@ public class ViewPagerActivity extends AppCompatActivity {
 						src = el.absUrl("src");
 
 
+						Bitmap bitmap = BitmapDecoder.from(src)
+								.postProcessor(new BitmapPostProcessor() {
+									@Override
+									public Bitmap process(Bitmap bitmap) {
+										deleteCache(ViewPagerActivity.this);
 
-						URL url = new URL(src);
-						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-						connection.setDoInput(true);
-						connection.connect();
-						connection.setConnectTimeout(20000);
-						connection.setReadTimeout(20000);
-						InputStream input = new BufferedInputStream(connection.getInputStream());
+										System.out.println("bitmap.getWidth()" + bitmap.getWidth() + "bitmap.getHeight()" + bitmap.getHeight());
+										Bitmap bitmap2;
+										if(bitmap.getWidth() > 1800 && bitmap.getHeight() > 1900) {
+											bitmap2 = Bitmap.createBitmap((bitmap.getWidth()),
+													(bitmap.getHeight()), Bitmap.Config.RGB_565);
+										}else{
+											bitmap2 = Bitmap.createBitmap((bitmap.getWidth()),
+													(bitmap.getHeight()), Bitmap.Config.RGB_565);
+										}
+										Canvas canvas = new Canvas(bitmap2);
 
-						BitmapFactory.Options options = new BitmapFactory.Options();
-						options.inJustDecodeBounds = false;
-						options.inSampleSize = 1;
-						options.inPreferredConfig = Bitmap.Config.RGB_565;
-						options.inScaled=false;
-						options.inTargetDensity = 1;
-						options.inDensity = 1;
-						options.inInputShareable=true;
-						options.inDither=false;
-						options.inTempStorage=new byte[64 * 1024];
-//						int heightRatio = (int)Math.ceil(options.outHeight/(float)2000);
-//						int widthRatio = (int)Math.ceil(options.outWidth/(float)2000);
+										Paint paint = new Paint();
+										paint.setColor(0xffffffff);
+										RectF area = new RectF(0, 0, bitmap2.getWidth(), bitmap2.getHeight());
+										canvas.drawRoundRect(area, 10, 10, paint);
+
+										paint.reset();
+										paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+										canvas.drawBitmap(bitmap, 0, 0, paint);
+
+										return bitmap2;
+									}
+								})
+								.decode();
+
 //
-//						if (heightRatio > 1 || widthRatio > 1)
-//						{
-//							if (heightRatio > widthRatio)
-//							{
-//								options.inSampleSize = heightRatio;
-//							} else {
-//								options.inSampleSize = widthRatio;
-//							}
-//						}
-						deleteCache(ViewPagerActivity.this);
-						myBitmap = BitmapFactory.decodeStream(input,null,options);
+						arrBitMap.add(bitmap);
 
-						arrBitMap.add(myBitmap);
-						input.close();
 
 
 					}

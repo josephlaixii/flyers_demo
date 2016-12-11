@@ -3,9 +3,11 @@ package com.flyers.db_software_incorporateion.db_flyers;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,13 +52,19 @@ public class FlyerActivity extends AppCompatActivity {
     TextView textView;
     int i = 0;
     Intent intent;
-
-
+    private static Bundle mBundleRecyclerViewState;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listof_stores_flyeractivity);
 
+        my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
+
+        my_recycler_view.setLayoutManager(new LinearLayoutManager(FlyerActivity.this,LinearLayoutManager.VERTICAL,false));
+
+        adapter = new FlyerAdapter(FlyerActivity.this,expiredate,h3tag,flyerimagetag,gurlUpdate2,title);
+        my_recycler_view.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,6 +93,58 @@ public class FlyerActivity extends AppCompatActivity {
         mTask = (Logo2) new Logo2().execute();
 
     }
+
+    public void saveArrayToPreference(String prestring,String key,ArrayList<String> stringArrayList,
+                                      SharedPreferences pref,SharedPreferences.Editor editor){
+        if(this != null) {
+            pref = this.getSharedPreferences(prestring, MODE_PRIVATE);
+            editor = pref.edit();
+            editor.putInt(key, stringArrayList.size());
+
+            for(int i=0;i<stringArrayList.size();i++)
+            {
+                editor.remove("Status_" + i);
+                editor.putString("Status_" + i, stringArrayList.get(i));
+            }
+
+            editor.apply();
+        }
+
+    }
+
+    public void loadArray(String prestring, String key, SharedPreferences pref, ArrayList<String> list){
+        pref = this.getSharedPreferences(prestring,MODE_PRIVATE);
+        int size = pref.getInt(key,0);
+        for(int i=0;i<size;i++)
+        {
+            list.add(pref.getString("Status_" + i, null));
+        }
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        // save RecyclerView state
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = my_recycler_view.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        // restore RecyclerView state
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            my_recycler_view.getLayoutManager().onRestoreInstanceState(listState);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

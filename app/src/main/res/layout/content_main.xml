@@ -22,7 +22,9 @@
         android:animateLayoutChanges="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none" />
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@android:color/darker_gray"
+        android:scrollbarSize="3dp"/>
 
 
 

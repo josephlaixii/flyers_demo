@@ -18,6 +18,8 @@
         android:layout_above="@+id/toolbar_bottom"
         android:id="@+id/view_pager"
         android:animateLayoutChanges="false"
+        android:touchscreenBlocksFocus="true"
+        android:filterTouchesWhenObscured="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
