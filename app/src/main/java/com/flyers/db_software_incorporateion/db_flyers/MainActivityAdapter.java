@@ -58,6 +58,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
     }
 
+
     @Override
     public int getItemCount(){
         return (null != list_of_images ? list_of_images.size() : 0);

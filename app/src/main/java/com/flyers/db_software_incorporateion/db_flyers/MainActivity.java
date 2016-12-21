@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import android.os.CountDownTimer;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -25,6 +27,8 @@ import com.appsee.Appsee;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
+
+import org.json.JSONArray;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity
     private FlyerActivity flyerActivity;
     private Button b;
     private TextView textView;
+    public static SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class MainActivity extends AppCompatActivity
 
 
         setTitle("All Flyers");
+
         new Logo().execute();
 
 
@@ -79,11 +85,42 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
+        toggle.setDrawerIndicatorEnabled(false);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
+        swipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeContainer.setRefreshing(true);
+            }
+        });
+        // Setup refresh listener which triggers new data loading
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+
+            public void onRefresh() {
+
+                // Your code to refresh the list here.
+
+                // Make sure you call swipeContainer.setRefreshing(false)
+
+                // once the network request has completed successfully.
+                new Logo().execute();
+                System.out.println("hello");
+
+            }
+
+        });
+
     }
+
 
     @Override
     public void onBackPressed() {
@@ -148,6 +185,7 @@ public class MainActivity extends AppCompatActivity
         protected void onPreExecute() {
             super.onPreExecute();
 
+
         }
 
         @Override
@@ -168,6 +206,7 @@ public class MainActivity extends AppCompatActivity
             System.out.println("This is the gurlupdate" + gurlUpdate);
             my_recycler_view.setAdapter(adapter);
 
+            swipeContainer.setRefreshing(false);
         }
 
         @Override

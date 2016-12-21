@@ -12,6 +12,14 @@
     tools:context="com.flyers.db_software_incorporateion.db_flyers.FlyerActivity"
     tools:showIn="@layout/activity_listof_stores">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/toolbar_bottom">
+
 
     <com.flyers.db_software_incorporateion.db_flyers.HackyViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,6 +30,7 @@
         android:filterTouchesWhenObscured="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <!--<android.support.v7.widget.RecyclerView-->
@@ -35,18 +44,6 @@
 
     <Button
         android:text=""
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:id="@+id/button2"
-        android:background="@drawable/back_button"
-        android:layout_marginLeft="110dp"
-        android:layout_marginStart="110dp"
-        android:layout_below="@+id/view_pager"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:text=""
         android:background="@drawable/back_button"
         android:rotation="180"
         android:layout_width="30dp"
@@ -54,8 +51,6 @@
         android:saveEnabled="true"
         android:id="@+id/button"
         android:layout_marginBottom="64dp"
-        android:layout_marginRight="109dp"
-        android:layout_marginEnd="109dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -72,5 +67,17 @@
         android:layout_alignBottom="@+id/button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:text=""
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/button2"
+        android:background="@drawable/back_button"
+        android:layout_below="@+id/swipeContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+
+        />
 
 </RelativeLayout>

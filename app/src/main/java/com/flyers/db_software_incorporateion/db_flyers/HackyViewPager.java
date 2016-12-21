@@ -19,13 +19,15 @@ import android.view.MotionEvent;
  * @author Chris Banes
  */
 public class HackyViewPager extends ViewPager {
-	
+    private boolean isLocked;
     public HackyViewPager(Context context) {
         super(context);
+        isLocked = false;
     }
 
     public HackyViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        isLocked = false;
     }
 
 
@@ -37,6 +39,18 @@ public class HackyViewPager extends ViewPager {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			return false;
-		}
+		} catch (ArrayIndexOutOfBoundsException e) {
+
+
+        return false;
+    }
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return !isLocked && super.onTouchEvent(event);
+    }
+
+    public void setLocked(boolean isLocked) {
+        this.isLocked = isLocked;
     }
 }

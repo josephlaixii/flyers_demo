@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,8 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.flyers.db_software_incorporateion.db_flyers.R.id.swipeContainer;
 
 
 public class FlyerActivity extends AppCompatActivity {
@@ -54,6 +57,7 @@ public class FlyerActivity extends AppCompatActivity {
     Intent intent;
     private static Bundle mBundleRecyclerViewState;
     private final String KEY_RECYCLER_STATE = "recycler_state";
+    private SwipeRefreshLayout swipeContainer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +95,32 @@ public class FlyerActivity extends AppCompatActivity {
 
 
         mTask = (Logo2) new Logo2().execute();
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeContainer.setRefreshing(true);
+            }
+        });
+        // Setup refresh listener which triggers new data loading
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+
+            public void onRefresh() {
+
+                // Your code to refresh the list here.
+
+                // Make sure you call swipeContainer.setRefreshing(false)
+
+                // once the network request has completed successfully.
+                new Logo2().execute();
+                System.out.println("hello");
+
+            }
+
+        });
 
     }
 
@@ -106,7 +136,7 @@ public class FlyerActivity extends AppCompatActivity {
                 editor.remove("Status_" + i);
                 editor.putString("Status_" + i, stringArrayList.get(i));
             }
-
+//
             editor.apply();
         }
 
@@ -324,29 +354,15 @@ public class FlyerActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-//            if(flyerurl.get(1) != null){
-//                foodurl = flyerurl.get(1);
-//            }
-//
-//
-//            textView.setText(flyerurl.get(0));
-
-//            if(!expiredate.isEmpty()) {
-//                Toolbar toolbarbottom = (Toolbar) findViewById(R.id.toolbar_bottom);
-//                setSupportActionBar(toolbarbottom);
-//                getSupportActionBar().setTitle(expiredate.get(0));
-//            }
-//
-
-
             my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
-//            my_recycler_view.setHasFixedSize(true);
+            my_recycler_view.setHasFixedSize(true);
             my_recycler_view.setLayoutManager(new LinearLayoutManager(FlyerActivity.this,LinearLayoutManager.VERTICAL,false));
 
             adapter = new FlyerAdapter(FlyerActivity.this,expiredate,h3tag,flyerimagetag,gurlUpdate2,title);
             my_recycler_view.setAdapter(adapter);
             System.out.println("pics man" +pics);
             System.out.println("DONE DFSFDSFSDFSDF : " + foodurl);
+            swipeContainer.setRefreshing(false);
         }
     }
 

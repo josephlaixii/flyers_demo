@@ -30,6 +30,7 @@ import android.os.CountDownTimer;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -76,6 +77,8 @@ public class ViewPagerActivity extends AppCompatActivity {
 	private ImageLoadTask mTask;
 	Response response2,response3;
 	Button button,button2;
+	private SwipeRefreshLayout swipeContainer;
+	private SamplePagerAdapter adapter;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -117,6 +120,15 @@ public class ViewPagerActivity extends AppCompatActivity {
 //			System.out.println("new ImageLoadTask(gurlUpdate.get(i)).execute()22" + gurlUpdate.get(i));
 		}
 
+		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+		swipeContainer.post(new Runnable() {
+			@Override
+			public void run() {
+				swipeContainer.setRefreshing(true);
+			}
+		});
+		// Setup refresh listener which triggers new data loading
+
 
 	}
 
@@ -137,12 +149,14 @@ public class ViewPagerActivity extends AppCompatActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		mTask.cancel(true);
+		deleteCache(ViewPagerActivity.this);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		mTask.cancel(true);
+
 		Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
 				MainActivity.class));
 	}
@@ -152,6 +166,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 	protected void onRestart() {
 		super.onRestart();
 		mTask.cancel(true);
+		deleteCache(ViewPagerActivity.this);
 		Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
 				MainActivity.class));
 
@@ -160,7 +175,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		//deleteCache(ViewPagerActivity.this);
 	}
 
 	@Override
@@ -211,6 +226,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 		private String url;
 
 		private String src;
+		private Bitmap bitmap;
 
 		public ImageLoadTask(String url) {
 			this.url = url;
@@ -222,7 +238,16 @@ public class ViewPagerActivity extends AppCompatActivity {
 			Toast.makeText(ViewPagerActivity.this, msg, Toast.LENGTH_SHORT).show();
 		}
 
+		@Override
+		protected void onProgressUpdate(Void... values) {
+			super.onProgressUpdate(values);
+		}
 
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			mViewPager.setOffscreenPageLimit(1);
+		}
 
 		@Override
 		protected Bitmap doInBackground(Void... params) {
@@ -277,7 +302,7 @@ public class ViewPagerActivity extends AppCompatActivity {
 						src = el.absUrl("src");
 
 
-						Bitmap bitmap = BitmapDecoder.from(src)
+						 bitmap = BitmapDecoder.from(src)
 								.postProcessor(new BitmapPostProcessor() {
 									@Override
 									public Bitmap process(Bitmap bitmap) {
@@ -321,6 +346,15 @@ public class ViewPagerActivity extends AppCompatActivity {
 					for (int j = 0; j < ilen; j++) {
 						arrBitMap.remove(i2[j] - j);
 					}
+
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							adapter = new SamplePagerAdapter(bitmap,arrBitMap);
+							mViewPager.setAdapter(adapter);
+							adapter.notifyDataSetChanged();
+						}
+					});
 
 
 				}
@@ -368,7 +402,10 @@ public class ViewPagerActivity extends AppCompatActivity {
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
-			mViewPager.setAdapter(new SamplePagerAdapter(result,arrBitMap));
+
+			adapter.notifyDataSetChanged();
+			mViewPager.setAdapter(adapter);
+
 			mBundleRecyclerViewState = new Bundle();
 			mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, onCreatesavedInstanceState);
 			if(!expiredate.isEmpty()) {
@@ -379,8 +416,10 @@ public class ViewPagerActivity extends AppCompatActivity {
 
 			}
 
-
+			swipeContainer.setRefreshing(false);
+			swipeContainer.setEnabled(false);
 			System.out.println("down" + arrBitMap);
+			deleteCache(ViewPagerActivity.this);
 		}
 
 
